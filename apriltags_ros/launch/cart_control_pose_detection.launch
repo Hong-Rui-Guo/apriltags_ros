@@ -22,7 +22,7 @@
       {id: 3, size: 0.163513},
       {id: 4, size: 0.163513},
       {id: 5, size: 0.163513},
-      {id: 7, size: 0.15, frame_id: control_frame}]
+      {id: 21, size: 0.079, frame_id: control_frame}]
     </rosparam>
   </node>
 </launch>
