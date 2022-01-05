@@ -13,6 +13,12 @@
 #include <AprilTags/Tag36h11.h>
 #include <XmlRpcException.h>
 
+#include <tf/transform_listener.h>
+#include <tf/transform_datatypes.h>
+#include <tf2/LinearMath/Quaternion.h>
+#include <tf2_ros/transform_broadcaster.h>
+
+
 namespace apriltags_ros{
 
 AprilTagDetector::AprilTagDetector(ros::NodeHandle& nh, ros::NodeHandle& pnh): it_(nh){
@@ -143,6 +149,45 @@ void AprilTagDetector::imageCb(const sensor_msgs::ImageConstPtr& msg, const sens
     tf::Stamped<tf::Transform> tag_transform;
     tf::poseStampedMsgToTF(tag_pose, tag_transform);
     tf_pub_.sendTransform(tf::StampedTransform(tag_transform, tag_transform.stamp_, tag_transform.frame_id_, description.frame_name()));
+    /***************** add static transform *****************/
+    // control point frame to center point frame
+    float distance_from_control_to_center = 0.3;
+    // double control_point_roll, control_point_pitch, control_point_yaw;
+    // double center_point_roll, center_point_pitch, center_point_yaw;
+    geometry_msgs::TransformStamped transformStamped;
+    tf::Quaternion q;
+
+    // transform control point orientation from quaternion to euler
+    // tf::Quaternion q(
+    //     tag_pose.pose.orientation.x,
+    //     tag_pose.pose.orientation.y,
+    //     tag_pose.pose.orientation.z,
+    //     tag_pose.pose.orientation.w);
+    // tf::Matrix3x3 m(q);
+    // m.getRPY(control_point_roll, control_point_pitch, control_point_yaw);
+
+    // // get center point orientation(euler)
+    // center_point_roll = control_point_roll - M_PI/2;
+    // center_point_pitch = control_point_pitch;
+    // center_point_yaw = control_point_yaw + M_PI/2;
+
+    transformStamped.header.stamp = ros::Time::now();
+    transformStamped.header.frame_id = "control_frame";
+    transformStamped.child_frame_id = "cart_frame";
+    // test use
+    // transformStamped.child_frame_id = "test_cart_frame";
+    transformStamped.transform.translation.x = 0;
+    transformStamped.transform.translation.y = 0;
+    transformStamped.transform.translation.z = -distance_from_control_to_center;
+    q.setRPY(-M_PI/2, M_PI/2, 0);
+    // q.setRPY(-M_PI/2, 0, M_PI/2);
+    // q.setRPY(center_point_roll, center_point_pitch, center_point_yaw);
+    transformStamped.transform.rotation.x = q.x();
+    transformStamped.transform.rotation.y = q.y();
+    transformStamped.transform.rotation.z = q.z();
+    transformStamped.transform.rotation.w = q.w();
+    // send static transform
+    tf_pub_.sendTransform(transformStamped);    
   }
   detections_pub_.publish(tag_detection_array);
   pose_pub_.publish(tag_pose_array);

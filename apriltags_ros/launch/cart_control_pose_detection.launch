@@ -29,10 +29,14 @@
       </rosparam>
     </node>
 
-    <!-- rviz -->
-    <node name="rviz" pkg="rviz" type="rviz" args="-d $(find apriltags_ros)/rviz/control_pose_detection.rviz"
-                                             output="$(arg output)">
+    <node pkg="cart_pushing_navigation_ver2" type="detection_AprilTag_node.py" 
+                                            name="detection_node" output="$(arg output)">
     </node>
+
+    <!-- rviz -->
+    <!-- <node name="rviz" pkg="rviz" type="rviz" args="-d $(find apriltags_ros)/rviz/control_pose_detection.rviz"
+                                             output="$(arg output)">
+    </node> -->
 
 
 </launch>
