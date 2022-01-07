@@ -114,6 +114,7 @@ void AprilTagDetector::imageCb(const sensor_msgs::ImageConstPtr& msg, const sens
   bool left_tag_flag = false;
   bool right_tag_flag = false;
   double distance_from_control_to_center = 0.3;
+  double apriltag_height = 0.3;
   double cart_width = 0.45;
   double tag_width = 0.079;
 
@@ -157,11 +158,11 @@ void AprilTagDetector::imageCb(const sensor_msgs::ImageConstPtr& msg, const sens
     {
       middle_tag_flag = true;
     }
-    else if(detection.id == 20)
+    else if(detection.id == 16)
     {
       left_tag_flag = true;
     }
-    else if(detection.id == 22)
+    else if(detection.id == 26)
     {
       right_tag_flag = true;
     }
@@ -174,13 +175,56 @@ void AprilTagDetector::imageCb(const sensor_msgs::ImageConstPtr& msg, const sens
     geometry_msgs::TransformStamped transformStamped;
     tf2::Quaternion quat;
 
+    // test use
+    // transformStamped.header.stamp = ros::Time::now();
+    // transformStamped.header.frame_id = "control_frame";
+    // transformStamped.child_frame_id = "cart_frame";
+    // transformStamped.transform.translation.x = 0;
+    // transformStamped.transform.translation.y = 0;
+    // transformStamped.transform.translation.z = -distance_from_control_to_center;
+    // quat.setRPY(-M_PI/2, M_PI/2, 0);
+    // transformStamped.transform.rotation.x = quat.x();
+    // transformStamped.transform.rotation.y = quat.y();
+    // transformStamped.transform.rotation.z = quat.z();
+    // transformStamped.transform.rotation.w = quat.w();
+    // tf_pub_.sendTransform(transformStamped);
+
+    // transformStamped.header.stamp = ros::Time::now();
+    // transformStamped.header.frame_id = "left_control_frame";
+    // transformStamped.child_frame_id = "left_cart_frame";
+    // transformStamped.transform.translation.x = (cart_width - tag_width) / 2;
+    // transformStamped.transform.translation.y = 0;
+    // transformStamped.transform.translation.z = -distance_from_control_to_center;
+    // quat.setRPY(-M_PI/2, M_PI/2, 0);
+    // transformStamped.transform.rotation.x = quat.x();
+    // transformStamped.transform.rotation.y = quat.y();
+    // transformStamped.transform.rotation.z = quat.z();
+    // transformStamped.transform.rotation.w = quat.w();
+    // tf_pub_.sendTransform(transformStamped);
+
+
+    // transformStamped.header.stamp = ros::Time::now();
+    // transformStamped.header.frame_id = "right_control_frame";
+    // transformStamped.child_frame_id = "right_cart_frame";
+    // transformStamped.transform.translation.x = -(cart_width - tag_width) / 2;
+    // transformStamped.transform.translation.y = 0;
+    // transformStamped.transform.translation.z = -distance_from_control_to_center;
+    // quat.setRPY(-M_PI/2, M_PI/2, 0);
+    // transformStamped.transform.rotation.x = quat.x();
+    // transformStamped.transform.rotation.y = quat.y();
+    // transformStamped.transform.rotation.z = quat.z();
+    // transformStamped.transform.rotation.w = quat.w();
+    // tf_pub_.sendTransform(transformStamped);
+
+
     if(middle_tag_flag)
     {
       transformStamped.header.stamp = ros::Time::now();
       transformStamped.header.frame_id = "control_frame";
       transformStamped.child_frame_id = "cart_frame";
       transformStamped.transform.translation.x = 0;
-      transformStamped.transform.translation.y = 0;
+      // transformStamped.transform.translation.y = 0;
+      transformStamped.transform.translation.y = -apriltag_height;
       transformStamped.transform.translation.z = -distance_from_control_to_center;
       quat.setRPY(-M_PI/2, M_PI/2, 0);
       transformStamped.transform.rotation.x = quat.x();
@@ -194,7 +238,8 @@ void AprilTagDetector::imageCb(const sensor_msgs::ImageConstPtr& msg, const sens
       transformStamped.header.frame_id = "left_control_frame";
       transformStamped.child_frame_id = "cart_frame";
       transformStamped.transform.translation.x = (cart_width - tag_width) / 2;
-      transformStamped.transform.translation.y = 0;
+      // transformStamped.transform.translation.y = 0;
+      transformStamped.transform.translation.y = -apriltag_height;
       transformStamped.transform.translation.z = -distance_from_control_to_center;
       quat.setRPY(-M_PI/2, M_PI/2, 0);
       transformStamped.transform.rotation.x = quat.x();
@@ -208,7 +253,8 @@ void AprilTagDetector::imageCb(const sensor_msgs::ImageConstPtr& msg, const sens
       transformStamped.header.frame_id = "right_control_frame";
       transformStamped.child_frame_id = "cart_frame";
       transformStamped.transform.translation.x = -(cart_width - tag_width) / 2;
-      transformStamped.transform.translation.y = 0;
+      // transformStamped.transform.translation.y = 0;
+      transformStamped.transform.translation.y = -apriltag_height;
       transformStamped.transform.translation.z = -distance_from_control_to_center;
       quat.setRPY(-M_PI/2, M_PI/2, 0);
       transformStamped.transform.rotation.x = quat.x();
