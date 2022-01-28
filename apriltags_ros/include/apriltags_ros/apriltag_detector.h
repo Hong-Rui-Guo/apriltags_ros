@@ -6,6 +6,7 @@
 
 #include <AprilTags/TagDetector.h>
 #include <tf/transform_broadcaster.h>
+#include <std_msgs/Bool.h>
 
 namespace apriltags_ros{
 
@@ -42,6 +43,13 @@ class AprilTagDetector{
   tf::TransformBroadcaster tf_pub_;
   boost::shared_ptr<AprilTags::TagDetector> tag_detector_;
   bool projected_optics_;
+
+  // repair part
+  ros::Publisher switch_pub;
+  std_msgs::Bool switch_on;
+  tf::Stamped<tf::Transform> tag_transform_previous;
+  // AprilTagDescription description_previous;
+
 };
 
 

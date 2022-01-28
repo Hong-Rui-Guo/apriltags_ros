@@ -63,6 +63,11 @@ AprilTagDetector::AprilTagDetector(ros::NodeHandle& nh, ros::NodeHandle& pnh): i
   image_pub_ = it_.advertise("tag_detections_image", 1);
   detections_pub_ = nh.advertise<AprilTagDetectionArray>("tag_detections", 1);
   pose_pub_ = nh.advertise<geometry_msgs::PoseArray>("tag_detections_pose", 1);
+
+  // repair part
+  switch_pub = nh.advertise<std_msgs::Bool>("/switch", 1);
+  switch_on.data = false;
+
 }
 AprilTagDetector::~AprilTagDetector(){
   image_sub_.shutdown();
@@ -81,6 +86,26 @@ void AprilTagDetector::imageCb(const sensor_msgs::ImageConstPtr& msg, const sens
   cv::cvtColor(cv_ptr->image, gray, CV_BGR2GRAY);
   std::vector<AprilTags::TagDetection>	detections = tag_detector_->extractTags(gray);
   ROS_DEBUG("%d tag detected", (int)detections.size());
+
+  // repair part
+  if((int)detections.size() > 0)
+  {
+    if (switch_on.data == true)
+    { 
+        switch_on.data = false;
+        switch_pub.publish(switch_on);
+    }
+  }
+  else
+  {
+    if (switch_on.data == false)
+    { 
+        // tf_pub_.sendTransform(tf::StampedTransform(tag_transform_previous, tag_transform_previous.stamp_, tag_transform_previous.frame_id_, "control_frame"));
+        tf_pub_.sendTransform(tf::StampedTransform(tag_transform_previous, ros::Time(0), tag_transform_previous.frame_id_, "control_frame"));
+        switch_on.data = true;
+        switch_pub.publish(switch_on);
+    }
+  }
 
   double fx;
   double fy;
@@ -166,6 +191,9 @@ void AprilTagDetector::imageCb(const sensor_msgs::ImageConstPtr& msg, const sens
     {
       right_tag_flag = true;
     }
+
+    // tag_transform_previous = tag_transform;
+    // description_previous = description;
 
   }
 
